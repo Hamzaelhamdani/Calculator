@@ -1,0 +1,106 @@
+openapi: 3.0.3
+info:
+  title: Title
+  description: Title
+  version: 1.0.0
+servers:
+  - url: 'https'
+paths:
+  /calculators:
+    get:
+      summary: List all calculators
+      operationId: listCalculators
+      tags:
+        - calculators
+      parameters:
+        - name: limit
+          in: query
+          description: How many items to return at one time (max 100)
+          required: false
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: A paged array of calculators
+          headers:
+            x-next:
+              type: string
+              description: A link to the next page of responses
+          schema:
+            $ref: '#/definitions/Calculators'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      summary: Create a calculator
+      operationId: createCalculators
+      tags:
+        - calculators
+      responses:
+        "201":
+          description: Null response
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /calculators/{calculatorId}:
+    get:
+      summary: Info for a specific calculator
+      operationId: showCalculatorById
+      tags:
+        - calculators
+      parameters:
+        - name: calculatorId
+          in: path
+          required: true
+          description: The id of the calculator to retrieve
+          type: string
+      responses:
+        "200":
+          description: Expected response to a valid request
+          schema:
+            $ref: '#/definitions/Calculators'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  
+
+
+definitions:
+  Calculator:
+    type: "object"
+    required:
+      - id
+      - firstNumber
+      - secondNumber
+      - operation
+      - result
+    properties:
+      id:
+        type: int
+      firstNumber:
+        type: number
+      secondNumber:
+        type: number
+      operation:
+        type: string
+      result:
+        type: number
+  Calculators:
+    type: array
+    items:
+      $ref: '#/definitions/Calculator'
+
+  Error:
+    type: "object"
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
